@@ -10,6 +10,12 @@ import UIKit
 
 class ViewController: UIViewController {
 
+    enum TypeOfColore {
+        case red
+        case green
+        case blue
+    }
+    
     @IBOutlet weak var coloreView: UIView!
     
     @IBOutlet weak var redNameLable: UILabel!
@@ -24,22 +30,21 @@ class ViewController: UIViewController {
     @IBOutlet weak var greenSlider: UISlider!
     @IBOutlet weak var blueSlider: UISlider!
     
-    var currentRedValue: CGFloat = 0
-    var currentGreenValue: CGFloat = 0
-    var currentBlueValue: CGFloat = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
-       
-        currentRedValue = CGFloat(redSlider.value)
-        currentGreenValue = CGFloat(greenSlider.value)
-        currentBlueValue = CGFloat(blueSlider.value)
-        
-        coloreView.backgroundColor = UIColor(red: currentRedValue, green: currentGreenValue, blue: currentBlueValue, alpha: 1)
+               
+        coloreView.backgroundColor = UIColor(red: CGFloat(redSlider.value),
+                                             green: CGFloat(greenSlider.value),
+                                             blue: CGFloat(blueSlider.value),
+                                             alpha: 1)
         
         coloreView.layer.cornerRadius = 20
         coloreView.layer.borderWidth = 3
-        coloreView.layer.borderColor = CGColor(srgbRed: 0, green: 0, blue: 0, alpha: 1)
+        coloreView.layer.borderColor = CGColor(srgbRed: 0,
+                                               green: 0,
+                                               blue: 0,
+                                               alpha: 1)
         
         redNameLable.text = "Red:"
         greenNameLable.text = "Green:"
@@ -61,27 +66,44 @@ class ViewController: UIViewController {
         greenSlider.minimumTrackTintColor = .systemGreen
         blueSlider.minimumTrackTintColor = .systemBlue
         
+       
     }
 
-
-    @IBAction func addRedBySlider() {
-        currentRedValue = CGFloat(redSlider.value)
-        redInfluenceLable.text = String(format: "%1.2f", redSlider.value)
-        coloreView.backgroundColor = UIColor(red: currentRedValue, green: currentGreenValue, blue: currentBlueValue, alpha: 1)
+    func addColorSlider(colore: TypeOfColore) {
+        
+        let lable: UILabel
+        let slider: UISlider
+        
+        switch colore {
+        case .red:
+            lable = redInfluenceLable
+            slider = redSlider
+        case .green:
+            lable = greenInfluenceLable
+            slider = greenSlider
+        case .blue:
+            lable = blueInfluenceLable
+            slider = blueSlider
+        }
+        
+        lable.text = String(format: "%1.2f", slider.value)
+        coloreView.backgroundColor = UIColor(red: CGFloat(redSlider.value),
+                                             green: CGFloat(greenSlider.value),
+                                             blue: CGFloat(blueSlider.value),
+                                             alpha: 1)
     }
     
+    
+    @IBAction func addRedBySlider() {
+        addColorSlider(colore: .red)
+    }
     
     @IBAction func addGreenSlider() {
-        currentGreenValue = CGFloat(greenSlider.value)
-        greenInfluenceLable.text = String(format: "%1.2f", greenSlider.value)
-        coloreView.backgroundColor = UIColor(red: currentRedValue, green: currentGreenValue, blue: currentBlueValue, alpha: 1)
+       addColorSlider(colore: .green)
     }
     
-    
     @IBAction func addBlueSlider() {
-        currentBlueValue = CGFloat(blueSlider.value)
-        blueInfluenceLable.text = String(format: "%1.2f", blueSlider.value)
-        coloreView.backgroundColor = UIColor(red: currentRedValue, green: currentGreenValue, blue: currentBlueValue, alpha: 1)
+       addColorSlider(colore: .blue)
     }
     
 }
