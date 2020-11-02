@@ -13,7 +13,7 @@ import UIKit
 //}
 
 class SettingsViewController: UIViewController {
-
+    
     enum TypeOfColore {
         case red
         case green
@@ -54,7 +54,10 @@ class SettingsViewController: UIViewController {
             blue: 0,
             alpha: 1
         )
-                                               
+        
+        self.redTextField.delegate = self
+        self.greenTextField.delegate = self
+        self.blueTextField.delegate = self
         
         colorView.backgroundColor = colorFromStartVC
         
@@ -63,6 +66,8 @@ class SettingsViewController: UIViewController {
         slidersSet()
         
         influenceLablesSet()
+        
+        textFieldSet()
     }
     
     
@@ -118,7 +123,7 @@ class SettingsViewController: UIViewController {
         redSlider.minimumTrackTintColor = .systemRed
         greenSlider.minimumTrackTintColor = .systemGreen
         blueSlider.minimumTrackTintColor = .systemBlue
-      
+        
         let swiftColor = colorView.backgroundColor!
         if let rgb = swiftColor.rgb() {
             print(rgb)
@@ -131,24 +136,39 @@ class SettingsViewController: UIViewController {
         
     }
     
+    private func textFieldSet() {
+        redTextField.text = String(format: "%1.2f",
+                                   redSlider.value)
+        greenTextField.text = String(format: "%1.2f",
+                                     greenSlider.value)
+        blueTextField.text = String(format: "%1.2f",
+                                    blueSlider.value)
+        
+    }
+    
     private func addColorSlider(colore: TypeOfColore) {
         
         let lable: UILabel
         let slider: UISlider
+        let textField: UITextField
         
         switch colore {
         case .red:
             lable = redInfluenceLable
             slider = redSlider
+            textField = redTextField
         case .green:
             lable = greenInfluenceLable
             slider = greenSlider
+            textField = greenTextField
         case .blue:
             lable = blueInfluenceLable
             slider = blueSlider
+            textField = greenTextField
         }
         
         lable.text = String(format: "%1.2f", slider.value)
+        textField.text = lable.text
         coloreViewSet()
     }
     
@@ -163,27 +183,32 @@ extension SettingsViewController: UITextFieldDelegate {
         view.endEditing(true)
     }
     
+   /* там есть интересный маленький баг...пока не понял из-за чего он возникает:
+     если вписать значение, например, 0.3 в зеленый ТекстФилд, затем перейти в
+     синий текст филд, не менять значение и мышкой выбрать снова зеленый текстФилд
+     в нем автоматически появляется 1.0 ... может, это из-за дублирования кода
+     в методах ниже
+    */
+    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        
+        textFieldDidEndEditing(textField)
+        return true
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
         if textField == redTextField {
+            redSlider.value = Float(textField.text!) ?? redSlider.value
+            addColorSlider(colore: .red)
             greenTextField.becomeFirstResponder()
         } else if textField == greenTextField {
+            greenSlider.value = Float(textField.text!) ?? greenSlider.value
+            addColorSlider(colore: .green)
             blueTextField.becomeFirstResponder()
         } else {
-            doneButtonPressed()
+            blueSlider.value = Float(textField.text!) ?? blueSlider.value
+            addColorSlider(colore: .blue)
+            redTextField.becomeFirstResponder()
         }
-        
-//        switch textField {
-//        case redTextField:
-//            greenTextField.becomeFirstResponder()
-//        case greenTextField:
-//            blueTextField.becomeFirstResponder()
-//        case blueTextField:
-//            doneButtonPressed()
-//        default:
-//            view.endEditing(true)
-//        }
-        return true
         
     }
 }
